@@ -6302,7 +6302,7 @@ static inline bool task_fits_max(struct task_struct *p, int cpu)
 		return true;
 
 	if (task_boost_policy(p) == SCHED_BOOST_ON_BIG ||
-			schedtune_task_boost(p) > 0)
+			schedtune_task_boost(p) > 10)
 		return false;
 
 	return __task_fits(p, cpu, 0);
