@@ -2727,7 +2727,7 @@ int himax_get_rawdata(struct chip_data_hx83112b *chip_info, uint32_t *RAW, uint3
     int total_read_times = 0;
     int total_size = datalen * 2 + 4;
     int total_size_temp;
-#if 1//def RAWDATA_DEBUG_PF
+#if 0//def RAWDATA_DEBUG_PF
     uint32_t j = 0;
     uint32_t index = 0;
     uint32_t Min_DATA = 0xFFFFFFFF;
@@ -2836,7 +2836,7 @@ int himax_get_rawdata(struct chip_data_hx83112b *chip_info, uint32_t *RAW, uint3
     }
 
 
-#if 1//def RAWDATA_DEBUG_PF
+#if 0//def RAWDATA_DEBUG_PF
     for (j = 0; j < chip_info->hw_res->TX_NUM; j++) {
         if (j == 0) {
             printk("      RX%2d", j + 1);

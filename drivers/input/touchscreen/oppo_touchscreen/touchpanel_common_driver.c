@@ -127,7 +127,7 @@ __attribute__((weak)) int reconfig_power_control(struct touchpanel_data *ts)
 void operate_mode_switch(struct touchpanel_data *ts)
 {
     if (!ts->ts_ops->mode_switch) {
-        TPD_INFO("not support ts_ops->mode_switch callback\n");
+        //TPD_INFO("not support ts_ops->mode_switch callback\n");
         return;
     }
 
@@ -240,7 +240,7 @@ static void tp_touch_down(struct touchpanel_data *ts, struct point_info points, 
     input_report_abs(ts->input_dev, ABS_MT_POSITION_X, points.x);
     input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, points.y);
 
-    TPD_SPECIFIC_PRINT(point_num, "Touchpanel id %d :Down[%4d %4d %4d]\n", id, points.x, points.y, points.z);
+    //TPD_SPECIFIC_PRINT(point_num, "Touchpanel id %d :Down[%4d %4d %4d]\n", id, points.x, points.y, points.z);
 
 #ifndef TYPE_B_PROTOCOL
     input_mt_sync(ts->input_dev);
@@ -444,7 +444,7 @@ static void tp_touch_release(struct touchpanel_data *ts)
     input_mt_sync(ts->input_dev);
     input_sync(ts->input_dev);
 #endif
-    TPD_INFO("release all touch point and key, clear tp touch down flag\n");
+    //TPD_INFO("release all touch point and key, clear tp touch down flag\n");
     ts->view_area_touched = 0; //realse all touch point,must clear this flag
     ts->touch_count = 0;
     ts->irq_slot = 0;
@@ -1403,8 +1403,6 @@ static ssize_t proc_gesture_control_write(struct file *file, const char __user *
                 operate_mode_switch(ts);
             }
         }
-    } else {
-        TPD_INFO("%s: do not do same operator :%d\n", __func__, value);
     }
     mutex_unlock(&ts->mutex);
 
@@ -5151,14 +5149,14 @@ void esd_handle_switch(struct esd_information *esd_info, bool on)
         if (!esd_info->esd_running_flag) {
             esd_info->esd_running_flag = 1;
 
-            TPD_INFO("Esd protector started, cycle: %d s\n", esd_info->esd_work_time / HZ);
+            //TPD_INFO("Esd protector started, cycle: %d s\n", esd_info->esd_work_time / HZ);
             queue_delayed_work(esd_info->esd_workqueue, &esd_info->esd_check_work, esd_info->esd_work_time);
         }
     } else {
         if (esd_info->esd_running_flag) {
             esd_info->esd_running_flag = 0;
 
-            TPD_INFO("Esd protector stoped!\n");
+            //TPD_INFO("Esd protector stoped!\n");
             cancel_delayed_work(&esd_info->esd_check_work);
         }
     }
@@ -5399,7 +5397,7 @@ int register_common_touch_device(struct touchpanel_data *pdata)
     ts->fb_notif.notifier_call = fb_notifier_callback;
     ret = msm_drm_register_client(&ts->fb_notif);
     if (ret) {
-        TPD_INFO("Unable to register fb_notifier: %d\n", ret);
+        //TPD_INFO("Unable to register fb_notifier: %d\n", ret);
     }
 #elif defined(CONFIG_FB)
     ts->fb_notif.notifier_call = fb_notifier_callback;
@@ -5638,10 +5636,10 @@ static int tp_suspend(struct device *dev)
     int ret;
     struct touchpanel_data *ts = dev_get_drvdata(dev);
 
-    TPD_INFO("%s: start.\n", __func__);
+    /*TPD_INFO("%s: start.\n", __func__);
 
     TPD_INFO("tp_suspend ts->spuri_fp_touch.fp_trigger =%d  ts->i2c_ready =%d  ts->spuri_fp_touch.lcd_resume_ok=%d \n",
-             ts->spuri_fp_touch.fp_trigger, ts->i2c_ready, ts->spuri_fp_touch.lcd_resume_ok);
+             ts->spuri_fp_touch.fp_trigger, ts->i2c_ready, ts->spuri_fp_touch.lcd_resume_ok); */
     ts->spuri_fp_touch.lcd_resume_ok = false;
     //step1:detect whether we need to do suspend
     if (ts->input_dev == NULL) {
