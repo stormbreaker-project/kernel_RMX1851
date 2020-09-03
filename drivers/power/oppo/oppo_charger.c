@@ -5208,94 +5208,7 @@ static void oppo_chg_kpoc_power_off_check(struct oppo_chg_chip *chip)
 #endif
 }
 
-static void oppo_chg_print_log(struct oppo_chg_chip *chip)
-{
-	/* wenbin.liu@SW.Bsp.Driver, 2016/02/29  Add for log tag*/
-	charger_xlog_printk(CHG_LOG_CRTI,
-		" CHGR[ %d / %d / %d / %d / %d ], \
-		BAT[ %d / %d / %d / %d / %d / %d ], \
-		GAUGE[ %d / %d / %d / %d / %d / %d / %d / %d / %d ], "
-		"STATUS[ 0x%x / %d / %d / %d / %d / 0x%x ], \
-		OTHER[ %d / %d / %d / %d / %d/ %d ]\n",
-		chip->charger_exist, chip->charger_type, chip->charger_volt,
-		chip->prop_status, chip->boot_mode,
-		chip->batt_exist, chip->batt_full, chip->chging_on, chip->in_rechging,
-		chip->charging_state, chip->total_time,
-		chip->temperature, chip->batt_volt, chip->batt_volt_min, chip->icharging,
-		chip->ibus, chip->soc, chip->ui_soc, chip->soc_load, chip->batt_rm,
-		chip->vbatt_over, chip->chging_over_time, chip->vchg_status,
-		chip->tbatt_status, chip->stop_voter, chip->notify_code,
-		chip->otg_switch, chip->mmi_chg, chip->boot_reason, chip->boot_mode,
-		chip->chargerid_volt, chip->chargerid_volt_got);
-#ifdef CONFIG_OPPO_EMMC_LOG
-/*Jingchun.Wang@BSP.Kernel.Debug, 2016/12/21,*/
-/*add for emmc log*/
-	kernel_emmclog_print(" CHGR[ %d / %d / %d / %d / %d ], \
-		BAT[ %d / %d / %d / %d / %d / %d ], \
-			GAUGE[ %d / %d / %d / %d / %d / %d / %d / %d ], "
-		"STATUS[ 0x%x / %d / %d / %d / %d / 0x%x ], \
-		OTHER[ %d / %d / %d / %d / %d/ %d ]\n",
-		chip->charger_exist, chip->charger_type, chip->charger_volt,
-		chip->prop_status, chip->boot_mode,
-		chip->batt_exist, chip->batt_full, chip->chging_on, chip->in_rechging,
-		chip->charging_state, chip->total_time,
-		chip->temperature, chip->batt_volt, chip->batt_volt_min, chip->icharging,
-		chip->soc, chip->ui_soc, chip->soc_load, chip->batt_rm,
-		chip->vbatt_over, chip->chging_over_time, chip->vchg_status,
-		chip->tbatt_status, chip->stop_voter, chip->notify_code,
-		chip->otg_switch, chip->mmi_chg, chip->boot_reason, chip->boot_mode,
-		chip->chargerid_volt, chip->chargerid_volt_got);
-#endif /*CONFIG_OPPO_EMMC_LOG*/
-
-#ifdef CONFIG_OPPO_CHARGER_MTK
-	if (chip->charger_type == POWER_SUPPLY_TYPE_USB_DCP) {
-		oppo_vooc_print_log();
-	}
-#endif
-}
-
 #define CHARGER_ABNORMAL_DETECT_TIME	24
-
-static void oppo_chg_critical_log(struct oppo_chg_chip *chip)
-{
-	static int chg_abnormal_count = 0;
-
-	if (chip->charger_exist) {
-		if (chip->stop_voter == 0
-				&& chip->charger_type == POWER_SUPPLY_TYPE_USB_DCP
-				&& chip->soc <= 75 && chip->icharging >= -20) {
-			chg_abnormal_count++;
-			if (chg_abnormal_count >= CHARGER_ABNORMAL_DETECT_TIME) {
-				chg_abnormal_count = CHARGER_ABNORMAL_DETECT_TIME;
-				charger_abnormal_log = CRITICAL_LOG_UNABLE_CHARGING;
-			}
-			charger_xlog_printk(CHG_LOG_CRTI, " unable charging, count=%d, charger_abnormal_log=%d\n", chg_abnormal_count, charger_abnormal_log);
-		} else {
-				chg_abnormal_count = 0;
-		}
-		if ((chip->stop_voter & CHG_STOP_VOTER__BATTTEMP_ABNORMAL)
-				== CHG_STOP_VOTER__BATTTEMP_ABNORMAL) {
-			charger_abnormal_log = CRITICAL_LOG_BATTTEMP_ABNORMAL;
-		} else if ((chip->stop_voter & CHG_STOP_VOTER__VCHG_ABNORMAL)
-				== CHG_STOP_VOTER__VCHG_ABNORMAL) {
-			charger_abnormal_log = CRITICAL_LOG_VCHG_ABNORMAL;
-		} else if ((chip->stop_voter & CHG_STOP_VOTER__VBAT_TOO_HIGH)
-				== CHG_STOP_VOTER__VBAT_TOO_HIGH) {
-			charger_abnormal_log = CRITICAL_LOG_VBAT_TOO_HIGH;
-		} else if ((chip->stop_voter & CHG_STOP_VOTER__MAX_CHGING_TIME)
-				== CHG_STOP_VOTER__MAX_CHGING_TIME) {
-			charger_abnormal_log = CRITICAL_LOG_CHARGING_OVER_TIME;
-		} else {
-			/*do nothing*/
-		}
-	} else if (oppo_vooc_get_btb_temp_over() == true
-			|| oppo_vooc_get_fastchg_to_normal() == true) {
-		/*Do not clear 0x5d and 0x59*/
-		charger_xlog_printk(CHG_LOG_CRTI, " btb_temp_over or fastchg_to_normal, charger_abnormal_log=%d\n", charger_abnormal_log);
-	} else {
-		charger_abnormal_log = 0;
-	}
-}
 
 static void oppo_chg_other_thing(struct oppo_chg_chip *chip)
 {
@@ -5306,8 +5219,6 @@ static void oppo_chg_other_thing(struct oppo_chg_chip *chip)
 	if (chip->charger_exist) {
 		chip->total_time += OPPO_CHG_UPDATE_INTERVAL_SEC;
 	}
-	oppo_chg_print_log(chip);
-	oppo_chg_critical_log(chip);
 }
 
 #define IBATT_COUNT	10
