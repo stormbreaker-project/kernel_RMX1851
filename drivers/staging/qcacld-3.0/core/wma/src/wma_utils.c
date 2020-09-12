@@ -4670,7 +4670,6 @@ static void wma_set_roam_offload_flag(tp_wma_handle wma, uint8_t vdev_id,
 			flag |= WMI_VDEV_PARAM_SKIP_ROAM_EAPOL_4WAY_HANDSHAKE;
 		}
 	}
-	}
 
 	wma_debug("vdev_id:%d, is_set:%d, flag:%d", vdev_id, is_set, flag);
 	status = wma_vdev_set_param(wma->wmi_handle, vdev_id,
