@@ -87,7 +87,7 @@ static struct oppo_chg_chip *g_charger_chip = NULL;
 
 #define OPPO_CHG_DEFAULT_CHARGING_CURRENT	512
 
-int enable_charger_log = 2;
+int enable_charger_log = 0;
 int charger_abnormal_log = 0;
 int tbatt_pwroff_enable = 1;
 
@@ -5208,25 +5208,6 @@ static void oppo_chg_kpoc_power_off_check(struct oppo_chg_chip *chip)
 #endif
 }
 
-static void oppo_chg_print_log(struct oppo_chg_chip *chip)
-{
-	/* wenbin.liu@SW.Bsp.Driver, 2016/02/29  Add for log tag*/
-	charger_xlog_printk(CHG_LOG_CRTI,
-		" CHGR[ %d / %d / %d / %d / %d ], \
-		BAT[ %d / %d / %d / %d / %d / %d ], \
-		GAUGE[ %d / %d / %d / %d / %d / %d / %d / %d / %d ], "
-		"STATUS[ 0x%x / %d / %d / %d / %d / 0x%x ], \
-		OTHER[ %d / %d / %d / %d / %d/ %d ]\n",
-		chip->charger_exist, chip->charger_type, chip->charger_volt,
-		chip->prop_status, chip->boot_mode,
-		chip->batt_exist, chip->batt_full, chip->chging_on, chip->in_rechging,
-		chip->charging_state, chip->total_time,
-		chip->temperature, chip->batt_volt, chip->batt_volt_min, chip->icharging,
-		chip->ibus, chip->soc, chip->ui_soc, chip->soc_load, chip->batt_rm,
-		chip->vbatt_over, chip->chging_over_time, chip->vchg_status,
-		chip->tbatt_status, chip->stop_voter, chip->notify_code,
-		chip->otg_switch, chip->mmi_chg, chip->boot_reason, chip->boot_mode,
-		chip->chargerid_volt, chip->chargerid_volt_got);
 #ifdef CONFIG_OPPO_EMMC_LOG
 /*Jingchun.Wang@BSP.Kernel.Debug, 2016/12/21,*/
 /*add for emmc log*/
@@ -5252,7 +5233,6 @@ static void oppo_chg_print_log(struct oppo_chg_chip *chip)
 		oppo_vooc_print_log();
 	}
 #endif
-}
 
 #define CHARGER_ABNORMAL_DETECT_TIME	24
 
@@ -5306,7 +5286,6 @@ static void oppo_chg_other_thing(struct oppo_chg_chip *chip)
 	if (chip->charger_exist) {
 		chip->total_time += OPPO_CHG_UPDATE_INTERVAL_SEC;
 	}
-	oppo_chg_print_log(chip);
 	oppo_chg_critical_log(chip);
 }
 
